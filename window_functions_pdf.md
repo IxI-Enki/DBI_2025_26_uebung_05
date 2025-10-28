@@ -1,31 +1,33 @@
-Gerne, hier ist der Inhalt der PDF-Datei zur **Oracle Analytic Functions** (Fensterfunktionen) im Markdown-Format, einschließlich der Tabellen.
+# Oracle Analytic Functions (Fensterfunktionen)
 
------
+> Inhalt der PDF-Datei zur **Oracle Analytic Functions** im Markdown-Format, einschließlich der Tabellen.
+
+---
 
 ## COLLABORATE 12
 
 **TECHNOLOOK AND APPLICATIONS FORUM FOR THE ORACLE COMIEN (IOUG)**
-[cite\_start]**independent oracle users group** [cite: 1]
+**independent oracle users group**
 
 ### Agenda
 
-  * [cite\_start]Aggregate vs Analytic [cite: 1]
-  * [cite\_start]**PARTITION BY** [cite: 1]
-  * [cite\_start]**ORDER BY** [cite: 1]
-  * [cite\_start]Window Clause [cite: 1]
-  * [cite\_start]**ROWS** [cite: 1]
-  * [cite\_start]**RANGE** [cite: 1]
+* Aggregate vs Analytic
+* **PARTITION BY**
+* **ORDER BY**
+* Window Clause
+* **ROWS**
+* **RANGE**
 
------
+---
 
 ## WHY USE ANALYTIC FUNCTIONS?
 
-  * [cite\_start]Ability to see one row from another row in the results [cite: 2]
-  * [cite\_start]Avoid self-join queries [cite: 2]
-  * [cite\_start]Summary data in detail rows [cite: 2]
-  * [cite\_start]Slice and dice within the results [cite: 2]
+* Ability to see one row from another row in the results
+* Avoid self-join queries
+* Summary data in detail rows
+* Slice and dice within the results
 
------
+---
 
 ## AGGREGATE OR ANALYTIC?
 
@@ -36,16 +38,16 @@ Gerne, hier ist der Inhalt der PDF-Datei zur **Oracle Analytic Functions** (Fens
 | MAX | X | X |
 | MIN | X | X |
 
------
+---
 
-### [cite\_start]What's the difference? [cite: 4]
+### What's the difference?
 
 | | SYNTAX | OUTPUT |
 |:---|:---|:---|
-| **Aggregate (traditional)** | [cite\_start]Query often includes the keywords **GROUP BY** [cite: 4] | [cite\_start]Output is a single row (or one row per group with GROUP BY) [cite: 4] |
-| **Analytic** | [cite\_start]**OVER** (some other stuff) [cite: 4] | [cite\_start]Does not change number of rows [cite: 4] |
+| **Aggregate (traditional)** | Query often includes the keywords **GROUP BY** | Output is a single row (or one row per group with GROUP BY) |
+| **Analytic** | **OVER** (some other stuff) | Does not change number of rows |
 
------
+---
 
 ## AGGREGATE EXAMPLES
 
@@ -100,14 +102,14 @@ FROM scott.emp;
 -- ORA-00937: not a single-group group function
 ```
 
------
+---
 
 ## ANALYTIC FUNCTIONS
 
-### [cite\_start]What makes a function analytic? [cite: 14]
+### What makes a function analytic?
 
-  * [cite\_start]Keyword **OVER** [cite: 14]
-  * [cite\_start]Followed by set of parentheses [cite: 14]
+* Keyword **OVER**
+* Followed by set of parentheses
 
 ### Beispiel 1: Einfache Analytic Function (Gesamtsumme und Gesamtzahl pro Detailzeile)
 
@@ -139,7 +141,7 @@ FROM scott.emp;
 
 ### Beispiel 2: Analytic Function mit WHERE Clause
 
-Analytische Funktionen werden *nach* der WHERE-Klausel angewendet. [cite\_start]Die Funktion arbeitet nur mit den Datensätzen, die die Bedingungen der WHERE-Klausel erfüllen[cite: 20, 21].
+Analytische Funktionen werden *nach* der WHERE-Klausel angewendet. Die Funktion arbeitet nur mit den Datensätzen, die die Bedingungen der WHERE-Klausel erfüllen.
 
 ```sql
 SELECT deptno, ename, sal,
@@ -160,13 +162,13 @@ WHERE deptno = 30;
 
 *6 rows selected.*
 
------
+---
 
 ## DISTINCT vs GROUP BY
 
-[cite\_start]Wird eine analytische Funktion (**COUNT(\*) OVER () AS empcnt**) in Verbindung mit `SELECT DISTINCT deptno` verwendet, bleibt die Zeilenzahl aller Abteilungen im *empcnt* gleich (14, da `OVER ()` die Gesamtanzahl der Zeilen vor der `DISTINCT`-Filterung zählt). [cite: 24, 25]
+Wird eine analytische Funktion (**COUNT(\*) OVER () AS empcnt**) in Verbindung mit `SELECT DISTINCT deptno` verwendet, bleibt die Zeilenzahl aller Abteilungen im *empcnt* gleich (14, da `OVER ()` die Gesamtanzahl der Zeilen vor der `DISTINCT`-Filterung zählt).
 
-[cite\_start]Wird `GROUP BY` verwendet, zählt `COUNT(*)` die Zeilen *pro Gruppe*. [cite: 24, 26]
+Wird `GROUP BY` verwendet, zählt `COUNT(*)` die Zeilen *pro Gruppe*.
 
 ### Beispiel 1: DISTINCT mit Analytic Function
 
@@ -203,36 +205,36 @@ GROUP BY deptno;
 
 ### Reihenfolge der Operationen (Order of Operations)
 
-1.  [cite\_start]Table Joins [cite: 27]
-2.  [cite\_start]WHERE clause filters [cite: 27]
-3.  [cite\_start]GROUP BY [cite: 27]
-4.  [cite\_start]Analytic Functions [cite: 27]
-5.  [cite\_start]DISTINCT [cite: 27]
-6.  [cite\_start]Ordering [cite: 27]
+1. Table Joins
+2. WHERE clause filters
+3. GROUP BY
+4. Analytic Functions
+5. DISTINCT
+6. Ordering
 
------
+---
 
 ## The Analytic Clause
 
-[cite\_start]Das ist der Inhalt innerhalb der Klammern (**OVER (...)**)[cite: 27, 28].
+Das ist der Inhalt innerhalb der Klammern (**OVER (...)**).
 
 ### Komponenten der Analytic Clause
 
-[cite\_start]Expressions, die der Funktion sagen, dass sie anders rechnen soll[cite: 28].
+Expressions, die der Funktion sagen, dass sie anders rechnen soll.
 
-[cite\_start]Drei mögliche Komponenten, die in dieser Reihenfolge stehen müssen[cite: 28]:
+Drei mögliche Komponenten, die in dieser Reihenfolge stehen müssen:
 
-1.  **Partition**
-2.  **Order**
-3.  **Windowing**
+1. **Partition**
+2. **Order**
+3. **Windowing**
 
-[cite\_start]Einige oder alle sind optional, abhängig von der Funktion[cite: 28].
+Einige oder alle sind optional, abhängig von der Funktion.
 
------
+---
 
 ## PARTITION BY
 
-[cite\_start]Berechnet die analytische Funktion auf einer **Untermenge** der Datensätze, ähnlich einem *GROUP BY* ohne die Anzahl der Zeilen zu reduzieren[cite: 29, 30].
+Berechnet die analytische Funktion auf einer **Untermenge** der Datensätze, ähnlich einem *GROUP BY* ohne die Anzahl der Zeilen zu reduzieren.
 
 ```sql
 SELECT deptno, ename, sal, job
@@ -262,7 +264,7 @@ FROM scott.emp;
 
 ### Vergleich: Korrelierte Skalare Subqueries
 
-[cite\_start]Die gleiche Logik kann mit korrelierten skalaren Subqueries erreicht werden, aber analytische Funktionen sind oft effizienter (Analytic SQL: ONE PASS vs. Traditional aggregate syntax: Three passes over the table, according to the `EXPLAIN PLAN` output)[cite: 31, 54].
+Die gleiche Logik kann mit korrelierten skalaren Subqueries erreicht werden, aber analytische Funktionen sind oft effizienter (Analytic SQL: ONE PASS vs. Traditional aggregate syntax: Three passes over the table, according to the `EXPLAIN PLAN` output).
 
 ```sql
 SELECT deptno, ename, sal, job
@@ -276,19 +278,19 @@ FROM scott.emp e;
 | 10 | CLARK | 2450 | MANAGER | 3 | 8750 |
 | ... | ... | ... | ... | ... | ... |
 
------
+---
 
 *(Die folgenden Abschnitte über **LAG/LEAD**, **RANKING FUNCTIONS** und **WINDOWING** wurden ebenfalls in das Markdown konvertiert, um die Vollständigkeit zu gewährleisten.)*
 
------
+---
 
 ## ZWEI NEUE FUNKTIONEN: LAG und LEAD
 
-  * [cite\_start]**LAG** gibt den Wert eines Feldes aus einem Datensatz zurück, der **vor** dem aktuellen Datensatz liegt[cite: 55].
-  * [cite\_start]**LEAD** gibt den Wert eines Feldes aus einem Datensatz zurück, der **nach** dem aktuellen Datensatz liegt[cite: 55].
-  * [cite\_start]**Syntax:** `LAG(field_name, num_recs)` OVER (ORDER BY ...) [cite: 55]
-  * [cite\_start]`ORDER BY` ist erforderlich[cite: 55].
-  * [cite\_start]Dies sind ausschließlich analytische Funktionen[cite: 55].
+* **LAG** gibt den Wert eines Feldes aus einem Datensatz zurück, der **vor** dem aktuellen Datensatz liegt.
+* **LEAD** gibt den Wert eines Feldes aus einem Datensatz zurück, der **nach** dem aktuellen Datensatz liegt.
+* **Syntax:** `LAG(field_name, num_recs)` OVER (ORDER BY ...)
+* `ORDER BY` ist erforderlich.
+* Dies sind ausschließlich analytische Funktionen.
 
 ### LAG Demonstration
 
@@ -347,7 +349,7 @@ ORDER BY deptno, ename;
 
 ### ORDER BY WITH PARTITION BY
 
-[cite\_start]`PARTITION BY` teilt die Daten, und `LAG` wird innerhalb jeder Abteilung (Partition) durchgeführt[cite: 64].
+`PARTITION BY` teilt die Daten, und `LAG` wird innerhalb jeder Abteilung (Partition) durchgeführt.
 
 ```sql
 SELECT deptno, ename, sal
@@ -375,18 +377,18 @@ ORDER BY deptno, ename;
 | 30 | TURNER | 1500 | SMITH | MARTIN | ALLEN |
 | 30 | WARD | 1250 | TURNER | TURNER | MARTIN |
 
------
+---
 
 ## DREI WEITERE FUNKTIONEN: Ranking Functions
 
-  * [cite\_start]**RANK()**: Weist bei Gleichheit den gleichen Rang zu und überspringt die nächsten Ränge. [cite: 78]
-  * [cite\_start]**DENSE\_RANK()**: Weist bei Gleichheit den gleichen Rang zu, überspringt aber keine Ränge. [cite: 78]
-  * [cite\_start]**ROW\_NUMBER()**: Weist jedem Datensatz eine eindeutige, sequentielle Nummer zu. [cite: 79]
-  * [cite\_start]**Usage**: `RANK() OVER (ORDER BY field_name)` [cite: 70, 71]
+* **RANK()**: Weist bei Gleichheit den gleichen Rang zu und überspringt die nächsten Ränge.
+* **DENSE\_RANK()**: Weist bei Gleichheit den gleichen Rang zu, überspringt aber keine Ränge.
+* **ROW\_NUMBER()**: Weist jedem Datensatz eine eindeutige, sequentielle Nummer zu.
+* **Usage**: `RANK() OVER (ORDER BY field_name)`
 
 ### Beispiel 1: Ranking ohne Gleichheit (Tie)
 
-[cite\_start]Wenn es keine Gleichheit gibt, liefern alle drei Funktionen dieselben Werte (ROW\_NUMBER liefert immer eine eindeutige Nummer)[cite: 74].
+Wenn es keine Gleichheit gibt, liefern alle drei Funktionen dieselben Werte (ROW\_NUMBER liefert immer eine eindeutige Nummer).
 
 ```sql
 SELECT deptno, ename, sal
@@ -434,13 +436,13 @@ ORDER BY deptno, sal;
 | 30 | ALLEN | 1600 | 8 | 7 | 8 |
 | 30 | BLAKE | 2850 | 10 | 9 | 10 |
 
------
+---
 
 ## ORDER BY CAVEAT \#2 (Wichtiger Hinweis)
 
-[cite\_start]Bei vielen Funktionen (**SUM**, **COUNT**, **MAX**, **MIN**, **LAST\_VALUE**) ändert die Verwendung von `ORDER BY` die **Windowing Clause** (den Datenbereich)[cite: 84].
+Bei vielen Funktionen (**SUM**, **COUNT**, **MAX**, **MIN**, **LAST\_VALUE**) ändert die Verwendung von `ORDER BY` die **Windowing Clause** (den Datenbereich).
 
-[cite\_start]**Standardverhalten bei ORDER BY:** Die Funktion summiert (oder zählt/findet Min/Max) vom **Beginn der Partition** bis zum **aktuellen Datensatz** (einschließlich)[cite: 87].
+**Standardverhalten bei ORDER BY:** Die Funktion summiert (oder zählt/findet Min/Max) vom **Beginn der Partition** bis zum **aktuellen Datensatz** (einschließlich).
 
 ### Beispiel: Running Totals (MTD - Month To Date)
 
@@ -463,20 +465,20 @@ WHERE deptno = 10;
 *7450 = 2450 + 5000*
 *8750 = 7450 + 1300*
 
-[cite\_start]Dies ist die Kurzform für: `SUM(sal) OVER (ORDER BY ename ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)`[cite: 92, 94].
+Dies ist die Kurzform für: `SUM(sal) OVER (ORDER BY ename ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)`.
 
------
+---
 
 ## WINDOWING CLAUSE
 
-[cite\_start]Die `WINDOWING` Clause wählt eine kleinere Untermenge als die Partition aus, basierend auf einer Anzahl von Datensätzen oder einem Zeitraum[cite: 94].
+Die `WINDOWING` Clause wählt eine kleinere Untermenge als die Partition aus, basierend auf einer Anzahl von Datensätzen oder einem Zeitraum.
 
 ### Demonstration des Standard-Windowing
 
 | Funktion | Analytic Clause | Implizite Windowing Clause |
 |:---|:---|:---|
-| Aggregat-Funktion ohne ORDER BY | `SUM(sal) OVER ()` | [cite\_start]**Implizit**: Die gesamte Partition (oder die gesamte Tabelle, wenn keine Partition vorhanden ist). [cite: 90, 92] |
-| Aggregat-Funktion mit ORDER BY | `SUM(sal) OVER (ORDER BY ename)` | [cite\_start]**Implizit**: `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` [cite: 92, 94] |
+| Aggregat-Funktion ohne ORDER BY | `SUM(sal) OVER ()` | **Implizit**: Die gesamte Partition (oder die gesamte Tabelle, wenn keine Partition vorhanden ist). |
+| Aggregat-Funktion mit ORDER BY | `SUM(sal) OVER (ORDER BY ename)` | **Implizit**: `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` |
 
 ```sql
 SELECT deptno, ename, sal
@@ -494,11 +496,11 @@ WHERE deptno = 10;
 | 10 | KING | 5000 | 8750 | 7450 | 8750 | 7450 |
 | 10 | MILLER | 1300 | 8750 | 8750 | 8750 | 8750 |
 
-*SUM1 ist gleich SUM3. [cite\_start]SUM2 ist gleich SUM4.* [cite: 94]
+*SUM1 ist gleich SUM3. SUM2 ist gleich SUM4.*
 
 ### WINDOWING: ROWS (Basierend auf Datensätzen)
 
-[cite\_start]Beschränkt das Fenster durch eine Anzahl von Datensätzen vor/nach dem aktuellen Datensatz[cite: 97].
+Beschränkt das Fenster durch eine Anzahl von Datensätzen vor/nach dem aktuellen Datensatz.
 
 ```sql
 SELECT deptno, ename, sal
@@ -515,16 +517,16 @@ FROM scott.emp;
 | 20 | ADAMS | 1100 | 2700 | 4100 |
 | ... | ... | ... | ... | ... |
 
-[cite\_start]*Beispiel SUM2 (10 CLARK): 2450 + 5000 = 7450 (1 davor (NULL, da erster) + 1 danach (KING))* [cite: 96]
-[cite\_start]*Beispiel SUM2 (10 KING): 2450 + 5000 + 1300 = 8750 (1 davor (CLARK) + 1 danach (MILLER))* [cite: 96]
+*Beispiel SUM2 (10 CLARK): 2450 + 5000 = 7450 (1 davor (NULL, da erster) + 1 danach (KING))*
+*Beispiel SUM2 (10 KING): 2450 + 5000 + 1300 = 8750 (1 davor (CLARK) + 1 danach (MILLER))*
 
 ### WINDOWING CLAUSE COMPARISON (ROWS vs. RANGE)
 
 | | ROWS | RANGE |
 |:---|:---|:---|
-| **Restriktion** | [cite\_start]Durch Anzahl der Datensätze [cite: 97] | [cite\_start]Durch einen Zeitraum oder einen Wert [cite: 97] |
-| **Referenziert** | [cite\_start]Basiert auf `ORDER BY` [cite: 97] | [cite\_start]Referenziert Feld, das in `ORDER BY` verwendet wird [cite: 97] |
-| **Beispiel** | `ROWS BETWEEN 10 PRECEDING AND 10 FOLLOWING` | [cite\_start]`RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND INTERVAL '10' DAY FOLLOWING` [cite: 97] |
+| **Restriktion** | Durch Anzahl der Datensätze | Durch einen Zeitraum oder einen Wert |
+| **Referenziert** | Basiert auf `ORDER BY` | Referenziert Feld, das in `ORDER BY` verwendet wird |
+| **Beispiel** | `ROWS BETWEEN 10 PRECEDING AND 10 FOLLOWING` | `RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND INTERVAL '10' DAY FOLLOWING` |
 
 ### Beispiel: RANGE (Basierend auf Gehaltswert)
 
@@ -534,6 +536,6 @@ SELECT ename, sal
 FROM scott.emp;
 ```
 
-[cite\_start]*Zählt alle Mitarbeiter, deren Gehalt maximal 200 weniger oder 200 mehr als das aktuelle Gehalt beträgt.* [cite: 97]
+*Zählt alle Mitarbeiter, deren Gehalt maximal 200 weniger oder 200 mehr als das aktuelle Gehalt beträgt.*
 
------
+---

@@ -15,7 +15,7 @@ Bearbeitung aller 9 Aufgaben der Übung "Analytische Funktionen" auf Basis des S
 
 ## 📂 Projektstruktur
 
-```
+```text
 dbi_uebung_05/
 │
 ├── README.md                                    # Hauptdokumentation
@@ -66,7 +66,8 @@ dbi_uebung_05/
 
 Die ursprüngliche `DIM_TIME` hatte nur separate Spalten für `year`, `month`, `day` – **keine vollständige `DATE`-Spalte**. Dies führte zu:
 
-❌ **Komplizierter Laufzeit-Konvertierung:**
+#### ❌ Komplizierte Laufzeit-Konvertierung
+
 ```sql
 TO_DATE(LPAD(year,4,'0')||'-'||LPAD(month,2,'0')||'-'||LPAD(day,2,'0'), 'YYYY-MM-DD')
 ```
@@ -76,7 +77,7 @@ TO_DATE(LPAD(year,4,'0')||'-'||LPAD(month,2,'0')||'-'||LPAD(day,2,'0'), 'YYYY-MM
 
 ### ✨ Lösung implementiert
 
-**1. DIM_TIME.FULL_DATE hinzugefügt**
+#### 1. DIM_TIME.FULL_DATE hinzugefügt
 
 ```sql
 CREATE TABLE DIM_TIME (
@@ -90,23 +91,24 @@ CREATE TABLE DIM_TIME (
 ```
 
 **Vorteile:**
+
 - ✅ Einfachere Syntax: `ORDER BY dt.full_date`
 - ✅ 3x schnellere Performance
 - ✅ Unterstützt `RANGE BETWEEN INTERVAL` direkt
 
-**2. Performance-Optimierungen**
+#### 2. Performance-Optimierungen
 
 - **Bitmap-Indizes** auf allen FK-Spalten von `FACT_SALES`
 - **B-Tree-Index** auf `DIM_TIME.FULL_DATE`
 - **Materialisierte Sichten** für häufige Aggregationen
 
-**3. Datenvalidierung**
+#### 3. Datenvalidierung
 
 - **CHECK Constraints** für gültige Werte (quantity > 0, amount >= 0)
 - **Referenzielle Integrität** validiert
 - **Automatische Statistiken** für Optimizer
 
-**4. Reporting-Support**
+#### 4. Reporting-Support
 
 - **5 Materialisierte Sichten** für Standard-Reports
 - **Stored Procedure** zum Refresh aller MVs
@@ -119,6 +121,7 @@ CREATE TABLE DIM_TIME (
 ### Beispiel-Query: Gleitender 10-Tage-Durchschnitt
 
 **Original (ohne FULL_DATE):**
+
 ```sql
 AVG(fs.amount) OVER (
   ORDER BY TO_DATE(
@@ -128,17 +131,20 @@ AVG(fs.amount) OVER (
   RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW
 )
 ```
+
 - Laufzeit: ~250ms bei 10.000 Zeilen
 - Komplexe Syntax
 - Konvertierung bei jedem Durchlauf
 
 **Verbessert (mit FULL_DATE):**
+
 ```sql
 AVG(fs.amount) OVER (
   ORDER BY dt.full_date
   RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW
 )
 ```
+
 - Laufzeit: ~80ms bei 10.000 Zeilen ⚡ **3x schneller!**
 - Klare, lesbare Syntax
 - Optimierbar durch Index
@@ -172,6 +178,7 @@ AVG(fs.amount) OVER (
 ```
 
 **Das verbesserte Schema umfasst:**
+
 - ✅ Alle ursprünglichen Daten
 - ✅ FULL_DATE in DIM_TIME
 - ✅ Performance-Indizes
@@ -383,26 +390,31 @@ SELECT LAG(amount) OVER (ORDER BY order_id) FROM FACT_SALES;
 ## 💡 Highlights dieser Lösung
 
 ### 🎯 Vollständigkeit
+
 - Alle 9 Aufgaben gelöst
 - Bonus-Kombinationsquery
 - Umfassende Tests
 
 ### 📖 Dokumentation
+
 - 4 ausführliche Markdown-Dateien
 - Inline-Kommentare in jeder SQL-Query
 - Beispiele und Erklärungen
 
 ### ⚡ Performance
+
 - Schema-Optimierungen identifiziert und implementiert
 - 3x schnellere Queries durch FULL_DATE
 - Materialisierte Sichten für Reporting
 
 ### 🧪 Qualität
+
 - Systematischer Testleitfaden (8 Phasen)
 - Fehlerbehandlung dokumentiert
 - Edge Cases berücksichtigt
 
 ### 🎓 Lernwert
+
 - Konzepte klar erklärt
 - Vergleichstabellen (Aggregate vs. Analytic, ROWS vs. RANGE)
 - Häufige Fehler mit Lösungen
@@ -423,8 +435,6 @@ Diese Übung demonstriert:
 **Qualitätsniveau:** ⭐⭐⭐⭐⭐ Production-Ready
 
 ---
-
-Viel Erfolg mit der Übung! 🎉
 
 **Jan Ritt**  
 *DBI 2025/26*  

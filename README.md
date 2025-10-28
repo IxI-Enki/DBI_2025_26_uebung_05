@@ -27,15 +27,15 @@ Diese Übung behandelt **Oracle Analytic Functions** (auch Window Functions gena
 
 ## 📂 Dateien in diesem Verzeichnis
 
-| Datei | Beschreibung |
-|-------|--------------|
-| `angabe.md` | Offizielle Aufgabenstellung |
-| `code_der_stunde.txt` | Beispielcode aus der Vorlesung |
-| `window_functions.pdf` | Theoretische Grundlagen zu Window Functions |
-| `window_functions_pdf.md` | Markdown-Version des PDFs |
-| `RITT_uebung_05_analytische_funktionen.sql` | **Hauptabgabe: Lösungen aller 9 Aufgaben** |
-| `dbi_2025_26_oracle.session.sql` | SQL-Session-File für Oracle DB (Docker) |
-| `README.md` | Diese Datei |
+| Datei                                       | Beschreibung                                |
+| ------------------------------------------- | ------------------------------------------- |
+| `angabe.md`                                 | Offizielle Aufgabenstellung                 |
+| `code_der_stunde.txt`                       | Beispielcode aus der Vorlesung              |
+| `window_functions.pdf`                      | Theoretische Grundlagen zu Window Functions |
+| `window_functions_pdf.md`                   | Markdown-Version des PDFs                   |
+| `RITT_uebung_05_analytische_funktionen.sql` | **Hauptabgabe: Lösungen aller 9 Aufgaben**  |
+| `dbi_2025_26_oracle.session.sql`            | SQL-Session-File für Oracle DB (Docker)     |
+| `README.md`                                 | Diese Datei                                 |
 
 ---
 
@@ -44,38 +44,47 @@ Diese Übung behandelt **Oracle Analytic Functions** (auch Window Functions gena
 Alle Lösungen befinden sich in der Datei **`RITT_uebung_05_analytische_funktionen.sql`**.
 
 ### Aufgabe 1: Gesamtumsatz aller Sales-Verkäufe
+
 **Analytische Funktion:** `SUM(amount) OVER ()`  
 **Konzept:** Aggregation über alle Zeilen ohne Gruppierung
 
 ### Aufgabe 2: Gesamtumsatz der Sales-Verkäufe je Jahr
+
 **Analytische Funktion:** `SUM(amount) OVER (PARTITION BY year)`  
 **Konzept:** Gruppierung nach Jahr mittels `PARTITION BY`
 
 ### Aufgabe 3: Rang (bezogen auf sales) des Sales-Eintrags
+
 **Analytische Funktion:** `RANK() OVER (ORDER BY amount DESC)`  
 **Konzept:** Ranking über alle Verkäufe
 
 ### Aufgabe 4: Rang relativ zum Verkaufstag
+
 **Analytische Funktion:** `RANK() OVER (PARTITION BY year, month, day ORDER BY amount DESC)`  
 **Konzept:** Ranking innerhalb jedes Tages
 
 ### Aufgabe 5: Laufende Summe der Verkäufe dieses Tages
+
 **Analytische Funktion:** `SUM(amount) OVER (PARTITION BY year, month, day ORDER BY amount)`  
 **Konzept:** Running Total mit implizitem Fenster
 
 ### Aufgabe 6: Gleitender Durchschnitt der letzten 10 Verkäufe
+
 **Analytische Funktion:** `AVG(amount) OVER (ORDER BY ... ROWS BETWEEN 9 PRECEDING AND CURRENT ROW)`  
 **Konzept:** Moving Average mit `ROWS` (zeilenbasiert)
 
 ### Aufgabe 7: Gleitender Durchschnitt der letzten 10 Tage
+
 **Analytische Funktion:** `AVG(amount) OVER (ORDER BY datum RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW)`  
 **Konzept:** Moving Average mit `RANGE` (wertbasiert auf Datum)
 
 ### Aufgabe 8: Rang der Verkäufer nach deren Jahresumsatz
+
 **Analytische Funktion:** `RANK() OVER (PARTITION BY year ORDER BY jahresumsatz DESC)`  
 **Konzept:** Ranking auf aggregierten Daten (CTE)
 
 ### Aufgabe 9: Umsatzdifferenz zum nächst-schlechteren Verkäufer
+
 **Analytische Funktion:** `LAG(jahresumsatz) OVER (PARTITION BY year ORDER BY jahresumsatz DESC)`  
 **Konzept:** Zugriff auf vorherige Zeile mittels `LAG`
 
@@ -109,7 +118,7 @@ SELECT COUNT(*) FROM FACT_SALES;
 
 ## 📊 Star-Schema Übersicht (aus Übung 02)
 
-```
+```star-schema
 ┌─────────────┐       ┌──────────────┐       ┌──────────────┐
 │  DIM_TIME   │       │ DIM_PRODUCT  │       │ DIM_CUSTOMER │
 ├─────────────┤       ├──────────────┤       ├──────────────┤
@@ -119,18 +128,18 @@ SELECT COUNT(*) FROM FACT_SALES;
 │ day         │       │ list_price   │       │ credit_limit │
 └──────┬──────┘       └──────┬───────┘       └──────┬───────┘
        │                     │                      │
-       │              ┌──────┴──────────────────────┴──────┐
-       │              │                                     │
-       └──────────────┤         FACT_SALES                  │
-                      ├─────────────────────────────────────┤
-       ┌──────────────┤ t (FK) → DIM_TIME                   │
-       │              │ product (FK) → DIM_PRODUCT          │
-       │              │ customer (FK) → DIM_CUSTOMER        │
-┌──────┴────────┐     │ employee (FK) → DIM_EMPLOYEE        │
-│ DIM_EMPLOYEE  │     │ status (FK) → DIM_STATUS            │
-├───────────────┤     │ order_id, item_id                   │
-│ id (PK)       │     │ quantity, unit_price, amount        │
-│ first_name    │     └─────────────────────────────────────┘
+       │              ┌──────┴──────────────────────┴──┐
+       │              │                                │
+       └──────────────┤         FACT_SALES             │
+                      ├────────────────────────────────┤
+       ┌──────────────┤ t (FK) → DIM_TIME              │
+       │              │ product (FK) → DIM_PRODUCT     │
+       │              │ customer (FK) → DIM_CUSTOMER   │
+┌──────┴────────┐     │ employee (FK) → DIM_EMPLOYEE   │
+│ DIM_EMPLOYEE  │     │ status (FK) → DIM_STATUS       │
+├───────────────┤     │ order_id, item_id              │
+│ id (PK)       │     │ quantity, unit_price, amount   │
+│ first_name    │     └────────────────────────────────┘
 │ last_name     │              │
 │ job_title     │              │
 └───────────────┘       ┌──────┴───────┐
@@ -174,18 +183,18 @@ SUM(amount) OVER (ORDER BY datum)
 
 ### ROWS vs RANGE
 
-| Typ | Bedeutung | Beispiel |
-|-----|-----------|----------|
-| `ROWS` | Anzahl von Zeilen | `ROWS BETWEEN 9 PRECEDING AND CURRENT ROW` |
-| `RANGE` | Wertebereich | `RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW` |
+| Typ     | Bedeutung         | Beispiel                                                    |
+| ------- | ----------------- | ----------------------------------------------------------- |
+| `ROWS`  | Anzahl von Zeilen | `ROWS BETWEEN 9 PRECEDING AND CURRENT ROW`                  |
+| `RANGE` | Wertebereich      | `RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW` |
 
 ### Ranking-Funktionen
 
-| Funktion | Bei Gleichheit | Beispiel (1, 2, 2, 4) |
-|----------|----------------|------------------------|
-| `RANK()` | Gleicher Rang, Lücken | 1, 2, 2, 4 |
-| `DENSE_RANK()` | Gleicher Rang, keine Lücken | 1, 2, 2, 3 |
-| `ROW_NUMBER()` | Fortlaufend eindeutig | 1, 2, 3, 4 |
+| Funktion       | Bei Gleichheit              | Beispiel (1, 2, 2, 4) |
+| -------------- | --------------------------- | --------------------- |
+| `RANK()`       | Gleicher Rang, Lücken       | 1, 2, 2, 4            |
+| `DENSE_RANK()` | Gleicher Rang, keine Lücken | 1, 2, 2, 3            |
+| `ROW_NUMBER()` | Fortlaufend eindeutig       | 1, 2, 3, 4            |
 
 ---
 
@@ -231,7 +240,3 @@ TO_DATE(
 2. **Lesbarkeit**: OVER-Clauses mehrzeilig formatieren bei komplexen Definitionen
 3. **Testing**: Mit kleinen Datenmengen testen und Ergebnisse manuell nachrechnen
 4. **Performance**: Bei großen Daten `ROWS` bevorzugen (schneller als `RANGE`)
-
----
-
-Viel Erfolg! 🚀
