@@ -1,0 +1,58 @@
+---------------- Analytische Funktionen allgemein ----------------
+
+-- Bisher: Alle Zeilen landen in ihrer Gruppe (bzw. ohne GROUP BY in einer Gruppe)
+-- die Aggregationsfunktion liefert einen Wert je Gruppe, Zugriff auf Einzelzeilen
+-- ist nicht möglich.
+SELECT deptno, SUM(sal) FROM emp;
+SELECT deptno, SUM(sal) FROM emp GROUP BY deptno;
+
+-- Analytische Funktionen:
+-- Ausgangszeilen bleiben erhalten, Ergebnis der Aggregationsfunktion wird
+-- je Gruppe, in der sich die Zeile befindet, wiederholt.
+-- Gruppenbildung, Sortierung, etc. kann für jede analytische Funktion separat spezifiziert werden.
+SELECT deptno, empno, SUM(sal) OVER () FROM emp; 
+SELECT deptno, empno, SUM(sal) OVER (PARTITION BY deptno) FROM emp;
+SELECT deptno, empno, AVG(sal) OVER (PARTITION BY deptno), AVG(sal) OVER () FROM emp; 
+
+---------------- Fensterdeklaration ----------------
+-- Zusätzlich ist es mit analytischen Funktionen möglich, Aggregationsfunktionen
+-- auf ein Fenster (=Anzahl von Zeilen relativ zur aktuellen Zeile) auszuführen.
+-- Dazu ist zwingend die Angabe einer Sortierung erforderlich.
+
+-- Ein implizites Fenster wird verwendet, sobald ein Order-By angegeben wird.
+-- Dieses reicht von Zeile 1 bis zur (inkl). aktuellen Zeile und kann so
+-- z.B. für die Bildung einer laufenden Summe verwendet werden:
+select empno, ename, sal, SUM(sal) OVER (ORDER BY sal) from emp;
+
+-- Explizite Fensterdeklaration mittels ROWS (Anzahl von Zeilen vor/nach der aktuellen Zeile):
+-- wie Statement davor, nur explizit deklariert:
+select empno, ename, sal, SUM(sal) OVER (ORDER BY sal ROWS BETWEEN UNBOUNDED PRECEDING AND 0 FOLLOWING ) from emp;
+
+-- 5 Zeilen, 2 davor, die aktuelle, 2 danach:
+select empno, ename, sal, SUM(sal) OVER (ORDER BY sal ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING ) from emp;
+
+-- UNBOUNDED = alle Zeilen davor bzw. danach
+select empno, ename, sal, SUM(sal) OVER (ORDER BY sal ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING ) from emp;
+
+-- Fensterdeklaration mit RANGE -> keine fixe Anzahl von Zeilen, stattdessen Zeilen in einem gewissen Wertebereich
+-- Wie viele Mitarbeiter gibt es, die zwischen 0 und 500 weniger verdienen als der aktuelle:
+SELECT empno, ename, sal, COUNT(*) OVER (ORDER BY sal RANGE BETWEEN 500 PRECEDING AND 0 FOLLOWING) FROM emp;
+
+-- Wie viele MAs wirden 2 Monate vor bis 4 Monate nach dem aktuellen MA eingestellt:
+SELECT empno, ename, sal, COUNT(*) OVER (ORDER BY hiredate RANGE BETWEEN INTERVAL '2' MONTH PRECEDING AND INTERVAL '4' MONTH FOLLOWING) FROM emp;
+
+---------------- Rang / RANK: ----------------
+-- RANK erlaubt die Bestimmung des Rangs (~ die wie vielte Reihe ist die aktuelle in ihrer Sortierung)
+-- der wievielte Bestverdiener ist der aktuelle Mitarbeiter (1 = Mitarbeiter mit geringstem Einkommen, ...):
+SELECT empno, ename, deptno, sal, RANK() OVER (ORDER BY sal)
+-- je Abteilung:
+SELECT empno, ename, deptno, sal, RANK() OVER (PARTITION BY deptno  ORDER BY sal)
+-- den zweit-schlecht-verdienensten MA aller Abteilungen: Analytische Funktion nicht im WHERE-Teil möglich -> SubQuery
+SELECT * FROM (SELECT empno, ename, deptno, sal, RANK() OVER (PARTITION BY deptno ORDER BY sal) AS rang FROM emp) WHERE rang=2;
+
+---------------- LEAD / LAG ----------------
+-- Zugriff auf Spaltenwerte von Zeilen davor bzw danach:
+select empno, ename, sal, LAG(hiredate) OVER (ORDER BY hiredate) from emp;
+select empno, ename, sal, LEAD(hiredate) OVER (ORDER BY hiredate) from emp;
+select empno, ename, sal, LAG(hiredate, 2) OVER (ORDER BY hiredate) from emp;
+select empno, ename, sal, LEAD(hiredate, 2) OVER (ORDER BY hiredate) from emp;

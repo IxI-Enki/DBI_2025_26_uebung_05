@@ -1,0 +1,31 @@
+# Oracle SQL Developer / Database Files
+*.log
+*.sql~
+*.swp
+*.bak
+
+# PDF (already in repo, but exclude potential temp files)
+*.pdf~
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+*.temp
+~*
+
+# Dist folder (if it contains build artifacts)
+.dist/
+
+# Database connection files (keep session files, but exclude if they contain credentials)
+# Uncomment if session files contain sensitive data:
+# *.session.sql
