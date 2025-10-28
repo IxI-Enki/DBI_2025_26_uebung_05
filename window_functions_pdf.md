@@ -4,19 +4,44 @@
 
 ---
 
-## COLLABORATE 12
+<!-- markdownlint-disable MD033 -->
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0;">
+  
+  <!-- Logo links -->
+  <div style="flex: 0 0 auto;">
+    <img src="collab12logo.png" alt="COLLABORATE 12" height="80"/>
+  </div>
+  
+  <!-- Text Mitte -->
+  <div style="flex: 1; padding: 0 30px;">
+    <h2 style="margin: 0; color: #666;">
+      COLLABORATE<span style="color: #00a3c4;">12</span>
+    </h2>
+    <p style="margin: 5px 0 0 0; font-size: 0.7em; color: #666; text-transform: uppercase;">
+      Technology and Applications Forum<br/>for the Oracle Community
+    </p>
+  </div>
+  
+  <!-- IOUG Logo rechts -->
+  <div style="flex: 0 0 auto;">
 
-**TECHNOLOOK AND APPLICATIONS FORUM FOR THE ORACLE COMIEN (IOUG)**
-**independent oracle users group**
+$$\Huge\color{#007}{\boldsymbol{⟨}}\!\! \begin{array}{c} \textbf{\color{#00a3c4}{{IOUG}}} \\[-22pt] \tiny\textbf{independent oracle users group} \end{array}\!\!\color{#007}{\boldsymbol{⟩}}$$
 
-### Agenda
+  </div>
+  
+</div>
+<!-- markdownlint-enable MD033 -->
 
-* Aggregate vs Analytic
+---
+
+## Agenda
+
+* **Aggregate vs Analytic**
 * **PARTITION BY**
 * **ORDER BY**
-* Window Clause
-* **ROWS**
-* **RANGE**
+* **Window Clause**
+  * **ROWS**
+  * **RANGE**
 
 ---
 
@@ -33,10 +58,10 @@
 
 | Funktion | Aggregate | Analytic |
 |:---|:---|:---|
-| COUNT | X | X |
-| SUM | X | X |
-| MAX | X | X |
-| MIN | X | X |
+| COUNT | ✅ | ✅ |
+| SUM | ✅ | ✅ |
+| MAX | ✅ | ✅ |
+| MIN | ✅ | ✅ |
 
 ---
 
@@ -49,118 +74,337 @@
 
 ---
 
-## AGGREGATE EXAMPLES
+<!-- markdownlint-disable MD033 -->
 
-### Beispiel 1: Gesamtsumme und Gesamtzahl
+<h2 align="center" style="color: #003d5c; font-size: 2em; margin: 40px 0; border-bottom: 2px solid #ccc; padding-bottom: 10px;">AGGREGATE EXAMPLES</h2>
 
-```sql
-SELECT SUM(sal)
-FROM scott.emp;
--- Ergebnis: SUM(SAL): 29025 (1 row selected)
+<div style="display: grid; grid-template-columns: 1fr 1fr 320px; gap: 15px; margin: 30px 0;">
 
-SELECT COUNT(*)
-FROM scott.emp;
--- Ergebnis: COUNT(*): 14 (1 row selected)
+<!-- ========== LINKE SPALTE - Seite 1 ========== -->
+<div style="grid-column: 1;">
 
-SELECT COUNT(*), SUM(sal), MAX(sal), MIN(ename)
-FROM scott.emp;
--- Ergebnis: COUNT(*): 14, SUM(SAL): 29025, MAX(SAL): 5000, MIN(ENAME): ADAMS (1 row selected)
-```
+<div style="border: 2px solid #000; padding: 0; margin-bottom: 20px; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT COUNT</span> ( * )<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp;
+</div>
+<div style="padding: 12px;">
+<strong>COUNT(*)</strong><br/>
+---------<br/>
+14<br/>
+<br/>
+<em>1 row selected.</em>
+</div>
+</div>
 
-### Beispiel 2: Aggregat mit WHERE Clause
+<div style="border: 2px solid #000; padding: 0; margin-bottom: 20px; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT SUM</span> ( sal )<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp;
+</div>
+<div style="padding: 12px;">
+<strong>SUM(SAL)</strong><br/>
+---------<br/>
+29025<br/>
+<br/>
+<em>1 row selected.</em>
+</div>
+</div>
 
-```sql
-SELECT COUNT(*), SUM(sal)
-FROM scott.emp
-WHERE deptno = 30;
--- Ergebnis: COUNT(*): 6, SUM(SAL): 9400 (1 row selected)
-```
+</div>
 
-### Beispiel 3: Aggregat mit GROUP BY
+<!-- ========== MITTLERE SPALTE - Seite 1 ========== -->
+<div style="grid-column: 2;">
 
-```sql
-SELECT deptno, COUNT(*), SUM(sal)
-FROM scott.emp
-GROUP BY deptno;
-```
+<div style="border: 2px solid #000; padding: 0; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT COUNT</span> ( * )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">SUM</span> ( sal )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">MAX</span> ( sal )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">MIN</span> ( ename )<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp;
+</div>
+<div style="padding: 12px;">
+<strong>COUNT(*) &nbsp; SUM(SAL) &nbsp; MAX(SAL) &nbsp; MIN(ENAME)</strong><br/>
+-------- &nbsp; -------- &nbsp; -------- &nbsp; ----------<br/>
+14 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 29025 &nbsp;&nbsp;&nbsp;&nbsp; 5000 &nbsp;&nbsp;&nbsp;&nbsp; ADAMS<br/>
+<br/>
+<em>1 row selected.</em>
+</div>
+</div>
 
-| DEPTNO | COUNT(\*) | SUM(SAL) |
-|:---|:---|:---|
-| 10 | 3 | 8750 |
-| 20 | 5 | 10875 |
-| 30 | 6 | 9400 |
+</div>
 
-*3 rows selected. One record for each group.*
+<!-- ========== RECHTE SPALTE - DATENTABELLE ========== -->
+<div style="grid-column: 3; grid-row: 1 / 3;">
 
-### Beispiel 4: Fehler ohne GROUP BY (Oracle ORA-00937)
+<div style="border: 2px solid #003d5c; background: white; overflow: hidden;">
 
-```sql
-SELECT deptno, COUNT(*), SUM(sal)
-FROM scott.emp;
+<table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.9em;">
+<thead>
+<tr style="background: #003d5c; color: white;">
+<th style="padding: 8px; text-align: center; border: 1px solid #003d5c;">Deptno</th>
+<th style="padding: 8px; text-align: center; border: 1px solid #003d5c;">Ename</th>
+<th style="padding: 8px; text-align: center; border: 1px solid #003d5c;">Sal</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background: #e8e8e8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">10</td><td style="padding: 6px; border: 1px solid #ddd;">Clark</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">2450</td></tr>
+<tr style="background: #e8e8e8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">10</td><td style="padding: 6px; border: 1px solid #ddd;">King</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">5000</td></tr>
+<tr style="background: #e8e8e8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">10</td><td style="padding: 6px; border: 1px solid #ddd;">Miller</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">1300</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">20</td><td style="padding: 6px; border: 1px solid #ddd;">Adams</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">1100</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">20</td><td style="padding: 6px; border: 1px solid #ddd;">Ford</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">3000</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">20</td><td style="padding: 6px; border: 1px solid #ddd;">Jones</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">2975</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">20</td><td style="padding: 6px; border: 1px solid #ddd;">Scott</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">3000</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">20</td><td style="padding: 6px; border: 1px solid #ddd;">Smith</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">800</td></tr>
+<tr style="background: #c8c8c8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">30</td><td style="padding: 6px; border: 1px solid #ddd;">Allen</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">1600</td></tr>
+<tr style="background: #c8c8c8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">30</td><td style="padding: 6px; border: 1px solid #ddd;">Blake</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">2850</td></tr>
+<tr style="background: #c8c8c8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">30</td><td style="padding: 6px; border: 1px solid #ddd;">James</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">950</td></tr>
+<tr style="background: #c8c8c8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">30</td><td style="padding: 6px; border: 1px solid #ddd;">Martin</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">1250</td></tr>
+<tr style="background: #c8c8c8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">30</td><td style="padding: 6px; border: 1px solid #ddd;">Turner</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">1500</td></tr>
+<tr style="background: #c8c8c8;"><td style="padding: 6px; text-align: center; border: 1px solid #ddd;">30</td><td style="padding: 6px; border: 1px solid #ddd;">Ward</td><td style="padding: 6px; text-align: right; border: 1px solid #ddd;">1250</td></tr>
+</tbody>
+</table>
 
--- ERROR at line 1:
--- ORA-00937: not a single-group group function
-```
+</div>
+
+</div>
+
+</div>
+
+<div style="height: 40px; border-bottom: 3px solid #003d5c; margin: 40px 0;"></div>
+
+<!-- ========== SEITE 2 ========== -->
+
+<div style="display: grid; grid-template-columns: 1fr 1fr 320px; gap: 15px; margin: 30px 0;">
+
+<!-- ========== LINKE SPALTE - Seite 2 ========== -->
+<div style="grid-column: 1;">
+
+<div style="border: 2px solid #000; padding: 0; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT COUNT</span> ( * )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">SUM</span> ( sal )<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp<br/>
+<span style="color: #0066cc; font-weight: bold;">WHERE</span> deptno = <span style="color: #009900;">30</span>;
+</div>
+<div style="padding: 12px;">
+<strong>COUNT(*) &nbsp; SUM(SAL)</strong><br/>
+-------- &nbsp; --------<br/>
+6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9400<br/>
+<br/>
+<em>1 row selected.</em>
+</div>
+</div>
+
+</div>
+
+<!-- ========== MITTLERE SPALTE - Seite 2 ========== -->
+<div style="grid-column: 2;">
+
+<div style="border: 2px solid #000; padding: 0; margin-bottom: 20px; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT</span> deptno<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">COUNT</span>(*)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">SUM</span>(sal)<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp<br/>
+<span style="color: #0066cc; font-weight: bold;">GROUP BY</span> deptno;
+</div>
+<div style="padding: 12px;">
+<strong>DEPTNO &nbsp;&nbsp; COUNT(*) &nbsp;&nbsp; SUM(SAL)</strong><br/>
+------ &nbsp;&nbsp; -------- &nbsp;&nbsp; --------<br/>
+10 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8750<br/>
+20 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10875<br/>
+30 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9400<br/>
+<br/>
+<em>3 rows selected.</em>
+<div style="background: #003d5c; color: white; padding: 8px; margin-top: 10px; text-align: center; font-weight: bold;">
+One record for each group
+</div>
+</div>
+</div>
+
+<div style="border: 2px solid #000; padding: 0; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT</span> deptno<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">COUNT</span>(*)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">SUM</span>(sal)<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp;
+</div>
+<div style="padding: 12px; background: #fff;">
+<br/>
+<strong style="color: #cc0000;">ERROR at line 1:</strong><br/>
+<strong style="color: #cc0000;">ORA-00937: not a single-group group function</strong>
+</div>
+</div>
+
+</div>
+
+<!-- ========== RECHTE SPALTE - Fortsetzung Datentabelle (optional) ========== -->
+<div style="grid-column: 3;">
+
+<p style="font-style: italic; color: #666; text-align: center;">
+↑ Data from scott.emp table shown above ↑
+</p>
+
+</div>
+
+</div>
+
+<!-- markdownlint-enable MD033 -->
 
 ---
 
-## ANALYTIC FUNCTIONS
+<h2 align="center" style="color: #003d5c; font-size: 2em; margin: 40px 0; border-bottom: 2px solid #ccc; padding-bottom: 10px;">ANALYTIC FUNCTIONS</h2>
 
-### What makes a function analytic?
+<!-- ========== SEITE 1 ========== -->
 
-* Keyword **OVER**
-* Followed by set of parentheses
+<div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; margin: 30px 0;">
 
-### Beispiel 1: Einfache Analytic Function (Gesamtsumme und Gesamtzahl pro Detailzeile)
+<!-- LINKE SPALTE - Seite 1 -->
+<div style="grid-column: 1;">
 
-```sql
-SELECT deptno, ename, sal,
-       COUNT(*) OVER (),
-       SUM(sal) OVER ()
-FROM scott.emp;
-```
+<h3 style="color: #0099cc; margin-bottom: 15px;">What makes a function analytic?</h3>
 
-| DEPTNO | ENAME | SAL | COUNT(\*) OVER() | SUM(SAL) OVER() |
-|:---|:---|:---|:---|:---|
-| 10 | CLARK | 2450 | 14 | 29025 |
-| 10 | KING | 5000 | 14 | 29025 |
-| 10 | MILLER | 1300 | 14 | 29025 |
-| 20 | ADAMS | 1100 | 14 | 29025 |
-| 20 | FORD | 3000 | 14 | 29025 |
-| 20 | JONES | 2975 | 14 | 29025 |
-| 20 | SCOTT | 3000 | 14 | 29025 |
-| 20 | SMITH | 800 | 14 | 29025 |
-| 30 | ALLEN | 1600 | 14 | 29025 |
-| 30 | BLAKE | 2850 | 14 | 29025 |
-| 30 | JAMES | 950 | 14 | 29025 |
-| 30 | MARTIN | 1250 | 14 | 29025 |
-| 30 | TURNER | 1500 | 14 | 29025 |
-| 30 | WARD | 1250 | 14 | 29025 |
+<ul style="color: #0099cc; font-size: 1.1em; line-height: 1.8;">
+<li><strong>Keyword OVER</strong></li>
+<li><strong>Followed by set of parentheses</strong></li>
+</ul>
 
-*14 rows selected. Returns one result for each record in the dataset. No grouping.*
+<div style="border: 2px solid #000; padding: 0; margin-top: 20px; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT</span> deptno, ename, sal<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">COUNT</span> ( * ) <span style="color: #0066cc; font-weight: bold;">OVER</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">SUM</span> ( sal ) <span style="color: #0066cc; font-weight: bold;">OVER</span> ()<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp;
+</div>
+</div>
 
-### Beispiel 2: Analytic Function mit WHERE Clause
+</div>
 
-Analytische Funktionen werden *nach* der WHERE-Klausel angewendet. Die Funktion arbeitet nur mit den Datensätzen, die die Bedingungen der WHERE-Klausel erfüllen.
+<!-- RECHTE SPALTE - Ergebnis-Tabelle -->
+<div style="grid-column: 2; position: relative;">
 
-```sql
-SELECT deptno, ename, sal,
-       COUNT(*) OVER (),
-       SUM(sal) OVER ()
-FROM scott.emp
-WHERE deptno = 30;
-```
+<div style="border: 2px solid #003d5c; background: white; overflow: hidden;">
 
-| DEPTNO | ENAME | SAL | COUNT(\*) OVER() | SUM(SAL) OVER() |
-|:---|:---|:---|:---|:---|
-| 30 | ALLEN | 1600 | 6 | 9400 |
-| 30 | BLAKE | 2850 | 6 | 9400 |
-| 30 | JAMES | 950 | 6 | 9400 |
-| 30 | MARTIN | 1250 | 6 | 9400 |
-| 30 | TURNER | 1500 | 6 | 9400 |
-| 30 | WARD | 1250 | 6 | 9400 |
+<table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.85em;">
+<thead>
+<tr style="background: #f0f0f0; border-bottom: 2px solid #000;">
+<th style="padding: 6px; text-align: center;">DEPTNO</th>
+<th style="padding: 6px; text-align: left;">ENAME</th>
+<th style="padding: 6px; text-align: right;">SAL</th>
+<th style="padding: 6px; text-align: right;">COUNT(*)OVER()</th>
+<th style="padding: 6px; text-align: right;">SUM(SAL)OVER()</th>
+</tr>
+</thead>
+<tbody>
+<tr><td style="padding: 4px; text-align: center;">10</td><td style="padding: 4px;">CLARK</td><td style="padding: 4px; text-align: right;">2450</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">10</td><td style="padding: 4px;">KING</td><td style="padding: 4px; text-align: right;">5000</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">10</td><td style="padding: 4px;">MILLER</td><td style="padding: 4px; text-align: right;">1300</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">ADAMS</td><td style="padding: 4px; text-align: right;">1100</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">FORD</td><td style="padding: 4px; text-align: right;">3000</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">JONES</td><td style="padding: 4px; text-align: right;">2975</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">SCOTT</td><td style="padding: 4px; text-align: right;">3000</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">SMITH</td><td style="padding: 4px; text-align: right;">800</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">ALLEN</td><td style="padding: 4px; text-align: right;">1600</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">BLAKE</td><td style="padding: 4px; text-align: right;">2850</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">JAMES</td><td style="padding: 4px; text-align: right;">950</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">MARTIN</td><td style="padding: 4px; text-align: right;">1250</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">TURNER</td><td style="padding: 4px; text-align: right;">1500</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+<tr><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">WARD</td><td style="padding: 4px; text-align: right;">1250</td><td style="padding: 4px; text-align: right;">14</td><td style="padding: 4px; text-align: right;">29025</td></tr>
+</tbody>
+</table>
 
-*6 rows selected.*
+<p style="padding: 10px; margin: 0; font-style: italic; font-size: 0.9em; border-top: 1px solid #ccc;">14 rows selected.</p>
+
+</div>
+
+<div style="position: absolute; bottom: -60px; right: 0; background: #003d5c; color: white; padding: 15px 20px; border-radius: 8px; max-width: 280px; font-size: 0.9em; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+<strong>Returns one result<br/>for each record</strong> in the dataset.<br/>No grouping
+</div>
+
+</div>
+
+</div>
+
+<div style="height: 80px;"></div>
+<div style="height: 40px; border-bottom: 3px solid #003d5c; margin: 40px 0;"></div>
+
+<!-- ========== SEITE 2 ========== -->
+
+<div style="display: grid; grid-template-columns: 1fr 1fr 320px; gap: 20px; margin: 30px 0;">
+
+<!-- LINKE SPALTE - Seite 2 -->
+<div style="grid-column: 1 / 3; position: relative;">
+
+<h3 style="color: #0099cc; margin-bottom: 10px;">With WHERE Clause...</h3>
+<p style="color: #0099cc; font-weight: bold; margin-bottom: 20px;">•Which happens first?</p>
+
+<div style="border: 2px solid #000; padding: 0; background: white; font-family: monospace;">
+<div style="background: #f0f0f0; padding: 8px; border-bottom: 1px solid #bbb;">
+<span style="color: #0066cc; font-weight: bold;">SELECT</span> deptno, ename, sal<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">COUNT</span> ( * ) <span style="color: #0066cc; font-weight: bold;">OVER</span> ()<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, <span style="color: #0066cc; font-weight: bold;">SUM</span> ( sal ) <span style="color: #0066cc; font-weight: bold;">OVER</span> ()<br/>
+<span style="color: #0066cc; font-weight: bold;">FROM</span> scott.emp<br/>
+<span style="color: #0066cc; font-weight: bold;">WHERE</span> deptno = <span style="color: #009900;">30</span>;
+</div>
+<div style="padding: 12px;">
+<strong>DEPTNO ENAME &nbsp;&nbsp;&nbsp; SAL COUNT(*)OVER() SUM(SAL)OVER()</strong><br/>
+------- ----------- ---- -------------- --------------<br/>
+30 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ALLEN &nbsp;&nbsp;&nbsp;&nbsp; 1600 &nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9450<br/>
+30 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BLAKE &nbsp;&nbsp;&nbsp;&nbsp; 2850 &nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9450<br/>
+30 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; JAMES &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 950 &nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9450<br/>
+30 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MARTIN &nbsp;&nbsp;&nbsp; 1250 &nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9450<br/>
+30 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TURNER &nbsp;&nbsp;&nbsp; 1500 &nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9450<br/>
+30 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WARD &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1250 &nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9450<br/>
+<br/>
+<em>6 rows selected.</em>
+</div>
+</div>
+
+<!-- Callout Box - schwebt über der Query -->
+<div style="position: absolute; top: 100px; right: -50px; background: #003d5c; color: white; padding: 15px 20px; border-radius: 8px; max-width: 320px; font-size: 0.9em; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10;">
+<strong>Even with OVER() and empty parens,</strong> the function operates only on the records which meet the conditions of the WHERE clause
+</div>
+
+</div>
+
+<!-- RECHTE SPALTE - Datentabelle -->
+<div style="grid-column: 3;">
+
+<div style="border: 2px solid #003d5c; background: white; overflow: hidden;">
+
+<table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.85em;">
+<thead>
+<tr style="background: #003d5c; color: white;">
+<th style="padding: 6px; text-align: center;">Deptno</th>
+<th style="padding: 6px; text-align: center;">Ename</th>
+<th style="padding: 6px; text-align: center;">Sal</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background: #e8e8e8;"><td style="padding: 4px; text-align: center;">10</td><td style="padding: 4px;">Clark</td><td style="padding: 4px; text-align: right;">2450</td></tr>
+<tr style="background: #e8e8e8;"><td style="padding: 4px; text-align: center;">10</td><td style="padding: 4px;">King</td><td style="padding: 4px; text-align: right;">5000</td></tr>
+<tr style="background: #e8e8e8;"><td style="padding: 4px; text-align: center;">10</td><td style="padding: 4px;">Miller</td><td style="padding: 4px; text-align: right;">1300</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">Adams</td><td style="padding: 4px; text-align: right;">1100</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">Ford</td><td style="padding: 4px; text-align: right;">3000</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">Jones</td><td style="padding: 4px; text-align: right;">2975</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">Scott</td><td style="padding: 4px; text-align: right;">3000</td></tr>
+<tr style="background: #d8d8d8;"><td style="padding: 4px; text-align: center;">20</td><td style="padding: 4px;">Smith</td><td style="padding: 4px; text-align: right;">800</td></tr>
+<tr style="background: #c8c8f8;"><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">Allen</td><td style="padding: 4px; text-align: right;">1600</td></tr>
+<tr style="background: #c8c8f8;"><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">Blake</td><td style="padding: 4px; text-align: right;">2850</td></tr>
+<tr style="background: #c8c8f8;"><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">James</td><td style="padding: 4px; text-align: right;">950</td></tr>
+<tr style="background: #c8c8f8;"><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">Martin</td><td style="padding: 4px; text-align: right;">1250</td></tr>
+<tr style="background: #c8c8f8;"><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">Turner</td><td style="padding: 4px; text-align: right;">1500</td></tr>
+<tr style="background: #c8c8f8;"><td style="padding: 4px; text-align: center;">30</td><td style="padding: 4px;">Ward</td><td style="padding: 4px; text-align: right;">1250</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
 
 ---
 
@@ -419,7 +663,7 @@ FROM scott.emp
 ORDER BY deptno, sal;
 ```
 
-| DEPTNO | ENAME | SAL | F1 | F2 | F3 |
+| DEPTNO | ENAME | SAL | F1 | F2 | F3 | F4 |
 |:---|:---|:---|:---|:---|:---|:---|
 | 10 | MILLER | 1300 | 6 | 5 | 6 |
 | 10 | CLARK | 2450 | 9 | 8 | 9 |
