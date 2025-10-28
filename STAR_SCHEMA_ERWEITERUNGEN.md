@@ -4,7 +4,7 @@
 
 ### Unser aktuelles Star-Schema (aus Übung 02)
 
-```
+```text
                     DIM_TIME
                        |
                        |
@@ -21,6 +21,7 @@ DIM_CUSTOMER ----  FACT_SALES  ---- DIM_PRODUCT
 ### Warum nur EINE Fact-Tabelle?
 
 **Star-Schema Prinzip:**
+
 - **Fact-Tabelle = Stern-Mittelpunkt** (enthält Measures: Umsatz, Menge, etc.)
 - **Dimensionen = Stern-Zacken** (beschreiben den Kontext: Wer? Was? Wann? Wo?)
 - **Flache, denormalisierte Dimensionen** (keine Hierarchien in separaten Tabellen)
@@ -34,46 +35,55 @@ DIM_CUSTOMER ----  FACT_SALES  ---- DIM_PRODUCT
 ### 1. Star-Schema (unser aktuelles)
 
 **Charakteristik:**
+
 - 1 Fact-Tabelle
 - Mehrere flache Dimension-Tabellen
 - **Keine normalisierten Hierarchien**
 
 **Vorteile:**
+
 - ✅ Einfache Abfragen
 - ✅ Schnelle Performance
 - ✅ Leicht verständlich
 
 **Nachteile:**
+
 - ❌ Redundanz in Dimensionen
 - ❌ Größerer Speicherbedarf
 
 ### 2. Snowflake-Schema (Normalisierte Dimensionen)
 
 **Charakteristik:**
+
 - 1 Fact-Tabelle
 - **Hierarchisch normalisierte** Dimensionen
 
 **Beispiel:**
-```
+
+```text
 DIM_TIME → DIM_MONTH → DIM_QUARTER → DIM_YEAR
 ```
 
 **Vorteile:**
+
 - ✅ Weniger Redundanz
 - ✅ Kleinerer Speicherbedarf
 
 **Nachteile:**
+
 - ❌ Komplexere Abfragen (mehr JOINs)
 - ❌ Langsamere Performance
 
 ### 3. Fact Constellation / Galaxy Schema
 
 **Charakteristik:**
+
 - **MEHRERE Fact-Tabellen**
 - **Geteilte Dimensionen**
 
 **Beispiel:**
-```
+
+```text
               DIM_TIME
                  |  \
                  |   \
@@ -84,10 +94,12 @@ DIM_TIME → DIM_MONTH → DIM_QUARTER → DIM_YEAR
 ```
 
 **Vorteile:**
+
 - ✅ Mehrere Geschäftsprozesse modellierbar
 - ✅ Dimensionen werden wiederverwendet
 
 **Nachteile:**
+
 - ❌ Komplexere Wartung
 - ❌ Höhere Anforderungen an ETL
 
@@ -100,6 +112,7 @@ DIM_TIME → DIM_MONTH → DIM_QUARTER → DIM_YEAR
 **Problem:** `DIM_TIME` enthält redundante Jahr-/Monatsdaten
 
 **Lösung:**
+
 ```sql
 -- Aktuell (Star):
 DIM_TIME (ID, YEAR, MONTH, DAY, FULL_DATE)
@@ -111,7 +124,8 @@ DIM_DAY (ID, DAY_NUMBER, MONTH_ID, FULL_DATE)
            └── DIM_YEAR (ID, YEAR_NUMBER)
 ```
 
-**Bewertung:** ❌ **NICHT empfohlen!** 
+**Bewertung:** ❌ **NICHT empfohlen!**
+
 - Widerspricht Star-Schema-Prinzip
 - Macht Abfragen komplexer
 - Nur minimaler Speichervorteil
@@ -161,6 +175,7 @@ CREATE TABLE FACT_EMPLOYEE_PERFORMANCE (
 ```
 
 **Bewertung:** ✅ **EMPFOHLEN!**
+
 - Ermöglicht Analyse verschiedener Geschäftsprozesse
 - Dimensionen werden wiederverwendet
 - Entspricht Best Practices für DWH
@@ -209,6 +224,7 @@ ALTER TABLE FACT_SALES ADD (
 ```
 
 **Bewertung:** ✅ **EMPFOHLEN!**
+
 - Ermöglicht detailliertere Analysen
 - Bleibt im Star-Schema-Prinzip
 - Einfach zu implementieren
@@ -237,7 +253,8 @@ CREATE TABLE DIM_PRODUCT_SCD (
 ```
 
 **Beispiel:**
-```
+
+```text
 PRODUCT_ID | PRODUCT_NAME | PRICE | VALID_FROM | VALID_TO   | IS_CURRENT
 -----------|--------------|-------|------------|------------|------------
 1          | Laptop A     | 999   | 2024-01-01 | 2024-06-30 | N
@@ -245,6 +262,7 @@ PRODUCT_ID | PRODUCT_NAME | PRICE | VALID_FROM | VALID_TO   | IS_CURRENT
 ```
 
 **Bewertung:** ✅ **SEHR EMPFOHLEN!**
+
 - Historische Preis-Analysen möglich
 - Best Practice für DWH
 - Keine Änderung an FACT_SALES nötig
@@ -281,6 +299,7 @@ CREATE TABLE FACT_SALES_MONTHLY (
 ```
 
 **Bewertung:** ⚠️ **Optional**
+
 - Beschleunigt Reporting
 - Erhöht Wartungsaufwand
 - Nur bei großen Datenmengen sinnvoll
@@ -326,7 +345,7 @@ CREATE TABLE FACT_SALES_MONTHLY (
 
 ### Vorher (Aktuelles Schema)
 
-```
+```text
                     DIM_TIME
                        |
                        |
@@ -339,6 +358,7 @@ DIM_CUSTOMER ----  FACT_SALES  ---- DIM_PRODUCT
 ```
 
 **Capabilities:**
+
 - Verkaufsanalyse
 - Kunden-Analysen
 - Produkt-Performance
@@ -346,7 +366,7 @@ DIM_CUSTOMER ----  FACT_SALES  ---- DIM_PRODUCT
 
 ### Nachher (Erweitertes Fact Constellation)
 
-```
+```text
                               DIM_TIME
                                  |
                         +--------+--------+
@@ -361,6 +381,7 @@ DIM_CUSTOMER ---  FACT_SALES        FACT_INVENTORY --- DIM_PRODUCT_SCD
 ```
 
 **Neue Capabilities:**
+
 - ✅ Lagerbestandsanalyse
 - ✅ Versandkosten-Optimierung
 - ✅ Warehouse-Performance
@@ -372,15 +393,15 @@ DIM_CUSTOMER ---  FACT_SALES        FACT_INVENTORY --- DIM_PRODUCT_SCD
 
 ## 💡 Fazit
 
-**Deine Intuition war richtig!** 
+**Deine Intuition war richtig!**
 
 Ein Star-Schema kann und sollte für komplexe Geschäftsprozesse erweitert werden:
 
 1. **Nicht durch Hierarchien** (das wäre Snowflake)
 2. **Sondern durch:**
-   - Zusätzliche **Dimensionen** (mehr Analysemöglichkeiten)
-   - Zusätzliche **Fact-Tabellen** (verschiedene Geschäftsprozesse)
-   - **SCD** für Historisierung
+    - Zusätzliche **Dimensionen** (mehr Analysemöglichkeiten)
+    - Zusätzliche **Fact-Tabellen** (verschiedene Geschäftsprozesse)
+    - **SCD** für Historisierung
 
 **Unser aktuelles Schema war NICHT falsch** - es ist ein perfekt valides Star-Schema für Verkaufsanalysen!
 

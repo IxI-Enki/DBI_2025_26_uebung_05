@@ -6,45 +6,204 @@ Dieses Verzeichnis enthält die vollständige Implementierung eines **erweiterte
 
 ### Vom Star-Schema zum Fact Constellation Schema
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  ORIGINAL (Übung 02): Einfaches Star-Schema             │
-│                                                          │
-│            DIM_TIME                                      │
-│               |                                          │
-│  DIM_CUSTOMER --- FACT_SALES --- DIM_PRODUCT           │
-│               |                                          │
-│          DIM_EMPLOYEE                                   │
-│               |                                          │
-│          DIM_STATUS                                     │
-└─────────────────────────────────────────────────────────┘
+#### ORIGINAL (Übung 02): Einfaches Star-Schema
 
-┌─────────────────────────────────────────────────────────┐
-│  ERWEITERT: Fact Constellation / Galaxy Schema          │
-│                                                          │
-│                    DIM_TIME                              │
-│                      │  │  │  │                         │
-│           ┌──────────┴──┴──┴──┴────────┐               │
-│           │         │  │  │  │          │               │
-│       FACT_SALES    │  │  │  │    FACT_INVENTORY       │
-│           │         │  │  │  │          │               │
-│  DIM_CUSTOMER ──────┘  │  │  └──── DIM_WAREHOUSE       │
-│  DIM_EMPLOYEE ─────────┘  │                             │
-│  DIM_PRODUCT_SCD (+ Historisierung)                     │
-│           │                                              │
-│      FACT_RETURNS                                       │
-│           │                                              │
-│  FACT_EMPLOYEE_PERFORMANCE                              │
-│           │                                              │
-│  FACT_CUSTOMER_INTERACTION                              │
-│                                                          │
-│  + Neue Dimensionen:                                    │
-│    - DIM_WAREHOUSE                                      │
-│    - DIM_SHIPPING_METHOD                                │
-│    - DIM_PROMOTION                                      │
-│    - DIM_PAYMENT_METHOD                                 │
-└─────────────────────────────────────────────────────────┘
+```text
+┌─────────────┐            ┌──────────────┐┌──────────────┐
+│  DIM_TIME   │            │ DIM_PRODUCT  ││ DIM_CUSTOMER │
+├─────────────┤            ├──────────────┤├──────────────┤
+│ id (PK)     │            │ id (PK)      ││ id (PK)      │
+│ year        │            │ product_name ││ customer_name│
+│ month       │            │ category_name││ address      │
+│ day         │            │ list_price   ││ credit_limit │
+│ full_date   │            │              ││              │
+└┬────────────┘            └─────────────┬┘└──────┬───────┘
+ │    ┌────────────────────────────────┐ │        │
+ │    │         FACT_SALES             │ │        │
+ │    ├────────────────────────────────┤ │        │
+ └────┤ t (FK) → DIM_TIME              │ │        │
+      │ product (FK) → DIM_PRODUCT     ├─┘        │
+      │ customer (FK) → DIM_CUSTOMER   ├──────────┘
+  ┌───┤ employee (FK) → DIM_EMPLOYEE   │
+  │   │ status (FK) → DIM_STATUS       ├─┐
+  │   │ ───────────────                │ │
+  │   │ order_id (Degenerate)          │ │
+  │   │ item_id (Degenerate)           │ │
+  │   │ quantity, unit_price, amount   │ │
+  │   └────────────────────────────────┘ │
+┌─┴─────────────┐           ┌────────────┴─┐
+│ DIM_EMPLOYEE  │           │  DIM_STATUS  │
+├───────────────┤           ├──────────────┤
+│ id (PK)       │           │ id (PK)      │
+│ first_name    │           │ status       │
+│ last_name     │           └──────────────┘
+│ job_title     │
+└───────────────┘
 ```
+
+**✅ Charakteristik:**
+
+- **1 Fact-Tabelle** (FACT_SALES)
+- **5 Dimensionen** (flach, denormalisiert)
+- **Grain:** Eine Zeile pro Bestellposition
+- **Measures:** quantity, unit_price, amount
+
+---
+
+#### ERWEITERT: Fact Constellation / Galaxy Schema
+
+> **💡 Was ist "Degenerate Key"?**
+> Keys die DIREKT in der Fact-Tabelle stehen, OHNE eigene Dimensions-Tabelle
+> (z.B. `order_id`, `item_id` - sie haben keine weiteren Attribute)
+
+---
+
+##### 🌟 Star 1: FACT_SALES (Hauptfact - erweitert)
+
+```text
+┌───────────┐┌─────────────┐                               ┌─────────────────────┐┌──────────────┐┌──────────────┐
+│DIM_STATUS ││  DIM_TIME   │                               │  DIM_PRODUCT_SCD    ││ DIM_CUSTOMER ││ DIM_EMPLOYEE │
+├───────────┤├─────────────┤                               ├─────────────────────┤├──────────────┤├──────────────┤
+│id (PK)    ││ id (PK)     │                               │ id (PK)             ││ id (PK)      ││ id (PK)      │
+│status     ││ year        │                               │ product_id (BK)     ││ customer_name││ first_name   │
+└──────────┬┘│ month       │                               │ product_name        ││ address      ││ last_name    │
+           │ │ day         │                               │ price, cost         ││ credit_limit ││ job_title    │
+           │ │ full_date   │                               │ valid_from/to       │└─┬────────────┘└┬─────────────┘
+           │ └┬────────────┘                               │ is_current, version │  │              │
+           │  │                                            └───────────────────┬─┘  │              │
+           │  │ ┌────────────────────────────────────────────────────────────┐ │    │              │
+           │  │ │                     FACT_SALES                             │ │    │              │
+           │  │ ├────────────────────────────────────────────────────────────┤ │    │              │
+           │  └─┤ t (FK) → DIM_TIME                                          │ │    │              │
+           │    │ product (FK) → DIM_PRODUCT_SCD                             ├─┘    │              │
+           │    │ customer (FK) → DIM_CUSTOMER                               ├──────┘              │
+           │    │ employee (FK) → DIM_EMPLOYEE                               ├─────────────────────┘
+           └────┤ status (FK) → DIM_STATUS                                   │
+              ┌─┤ warehouse_id (FK) → DIM_WAREHOUSE                          │
+              │ │ shipping_id (FK) → DIM_SHIPPING_METHOD                     ├────┐
+              │ │ payment_id (FK) → DIM_PAYMENT                              ├─┐  │
+              │ │ ───────────────────────────────                            │ │  │
+              │ │ order_id, item_id (Degenerate)                             │ │  │
+              │ │ quantity, unit_price, amount, shipping_cost, discount, tax │ │  │
+              │ └────────────────────────────────────────────────────────────┘ │  │
+┌─────────────┴┐                                           ┌───────────────────┴┐┌┴────────────────────┐
+│DIM_WAREHOUSE │                                           │ DIM_PAYMENT_METHOD ││ DIM_SHIPPING_METHOD │
+├──────────────┤                                           ├────────────────────┤├─────────────────────┤
+│id (PK)       │                                           │ id (PK)            ││id (PK)              │
+│warehouse_code│                                           │ method_code(BK)    ││method_code (BK)     │
+│warehouse_name│                                           │ method_name        ││method_name          │
+│city, country │                                           │ provider           ││carrier              │
+│capacity_sqm  │                                           │ transaction_fee    ││avg_delivery_days    │
+│manager_name  │                                           │ processing_time    ││base_cost            │
+└──────────────┘                                           └────────────────────┘└─────────────────────┘
+```
+
+---
+
+##### 🌟 Star 2: FACT_INVENTORY
+
+```text
+┌─────────────┐                                  ┌───────────────┐┌─────────────┐
+│  DIM_TIME   │                                  │DIM_PRODUCT_SCD││DIM_WAREHOUSE│
+│  (shared)   │                                  │   (shared)    ││  (shared)   │
+└┬────────────┘                                  └──────────────┬┘└┬────────────┘
+ │ ┌──────────────────────────────────────────────────────────┐ │  │
+ │ │                   FACT_INVENTORY                         │ │  │
+ │ ├──────────────────────────────────────────────────────────┤ │  │
+ └─┤ t (FK) → DIM_TIME                                        │ │  │
+   │ product (FK) → DIM_PRODUCT_SCD                           ├─┘  │
+   │ warehouse_id (FK) → DIM_WAREHOUSE                        ├────┘
+   │ ────────────────────────────────────                     │
+   │ inventory_id (PK)                                        │
+   │ quantity_on_hand, reorder_level, quantity_reserved       │
+   │ total_value, turnover_rate                               │
+   └──────────────────────────────────────────────────────────┘
+```
+
+---
+
+##### 🌟 Star 3: FACT_PRODUCT_RETURNS
+
+```text
+┌─────────────┐                            ┌───────────────┐┌────────────┐
+│  DIM_TIME   │                            │DIM_PRODUCT_SCD││DIM_CUSTOMER│
+│  (shared)   │                            │   (shared)    ││ (shared)   │
+└┬────────────┘                            └──────────────┬┘└┬───────────┘
+ │ ┌────────────────────────────────────────────────────┐ │  │
+ │ │                  FACT_PRODUCT_RETURNS              │ │  │
+ │ ├────────────────────────────────────────────────────┤ │  │
+ └─┤ t (FK) → DIM_TIME                                  │ │  │
+   │ product (FK) → DIM_PRODUCT_SCD                     ├─┘  │
+   │ customer (FK) → DIM_CUSTOMER                       ├────┘
+ ┌─┤ warehouse_id (FK) → DIM_WAREHOUSE                  │
+ │ │ ───────────────────────────────────                │
+ │ │ return_id (PK), quantity_returned, return_amount   │
+ │ │ return_reason, condition, days_since_purchase      │
+ │ │ resaleable                                         │
+ │ └────────────────────────────────────────────────────┘
+┌┴──────────────┐
+│ DIM_WAREHOUSE │
+│   (shared)    │
+└───────────────┘
+```
+
+---
+
+##### 🌟 Star 4: FACT_EMPLOYEE_PERFORMANCE
+
+```text
+┌─────────────┐                               ┌──────────────┐
+│  DIM_TIME   │                               │ DIM_EMPLOYEE │
+│  (shared)   │                               │  (shared)    │
+└┬────────────┘                               └─────────────┬┘
+ │ ┌──────────────────────────────────────────────────────┐ │
+ │ │           FACT_EMPLOYEE_PERFORMANCE                  │ │
+ │ ├──────────────────────────────────────────────────────┤ │
+ └─┤ t (FK) → DIM_TIME                                    │ │
+   │ employee (FK) → DIM_EMPLOYEE                         ├─┘
+   │ ──────────────────────────────────                   │
+   │ performance_id (PK), sales_count, total_revenue      │
+   │ avg_order_value, customer_satisfaction, hours_worked │
+   │ revenue_per_hour, target_achievement_%               │
+   └──────────────────────────────────────────────────────┘
+```
+
+---
+
+##### 🌟 Star 5: FACT_CUSTOMER_INTERACTION
+
+```text
+┌─────────────┐                   ┌──────────────┐┌──────────────┐
+│  DIM_TIME   │                   │ DIM_EMPLOYEE ││ DIM_CUSTOMER │
+│  (shared)   │                   │  (shared)    ││  (shared)    │
+└┬────────────┘                   └─────────────┬┘└┬─────────────┘
+ │ ┌──────────────────────────────────────────┐ │  │
+ │ │           FACT_CUSTOMER_INTERACTION      │ │  │
+ │ ├──────────────────────────────────────────┤ │  │
+ └─┤ t (FK) → DIM_TIME                        │ │  │
+   │ employee (FK) → DIM_EMPLOYEE             ├─┘  │
+   │ customer (FK) → DIM_CUSTOMER             ├────┘
+   │ ───────────────────────────────────      │
+   │ interaction_id (PK), interaction_type    │
+   │ interaction_duration_min, issue_resolved │
+   │ satisfaction_score, response_time_min    │
+   └──────────────────────────────────────────┘
+```
+
+**✅ Charakteristik:**
+
+- **5 Fact-Tabellen** (verschiedene Geschäftsprozesse)
+- **9 Dimensionen** (teilweise geteilt!)
+- **SCD Type 2** für DIM_PRODUCT_SCD
+- **Grain:** Unterschiedlich je Fact-Tabelle
+
+**🔗 Geteilte Dimensionen:**
+
+- `DIM_TIME` → verwendet von ALLEN Facts
+- `DIM_PRODUCT` → FACT_SALES, FACT_INVENTORY, FACT_RETURNS
+- `DIM_EMPLOYEE` → FACT_SALES, FACT_EMPLOYEE_PERFORMANCE, FACT_CUSTOMER_INTERACTION
+- `DIM_CUSTOMER` → FACT_SALES, FACT_RETURNS, FACT_CUSTOMER_INTERACTION
+- `DIM_WAREHOUSE` → FACT_SALES, FACT_INVENTORY, FACT_RETURNS
 
 ---
 
@@ -55,6 +214,7 @@ Dieses Verzeichnis enthält die vollständige Implementierung eines **erweiterte
 **Datei:** `01_neue_dimensionen.sql`
 
 **Was wird gemacht:**
+
 - **4 neue Dimension-Tabellen**:
   - `DIM_WAREHOUSE` (Lagerstandorte)
   - `DIM_SHIPPING_METHOD` (Versandarten)
@@ -66,12 +226,14 @@ Dieses Verzeichnis enthält die vollständige Implementierung eines **erweiterte
 **Aufwand:** 🟢 Niedrig | **Nutzen:** 🟢🟢🟢 Hoch
 
 **Neue Analysemöglichkeiten:**
+
 - ✅ Versandkosten-Optimierung
 - ✅ Warehouse-Performance
 - ✅ Promotion-Effektivität
 - ✅ Zahlungsmethoden-Analyse
 
 **Beispiel-Query:**
+
 ```sql
 -- Welcher Versandweg ist am profitabelsten?
 SELECT 
@@ -97,6 +259,7 @@ ORDER BY
 **Datei:** `02_scd_implementation.sql`
 
 **Was wird gemacht:**
+
 - **DIM_PRODUCT_SCD** mit Historisierung (SCD Type 2)
 - **Stored Procedures**:
   - `sp_insert_product_scd()` - Neues Produkt
@@ -107,12 +270,14 @@ ORDER BY
 **Aufwand:** 🟡 Mittel | **Nutzen:** 🟢🟢🟢 Sehr Hoch
 
 **Neue Analysemöglichkeiten:**
+
 - ✅ Historische Preis-Analysen
 - ✅ Korrekte Umsatzberechnungen mit historischen Preisen
 - ✅ Preis-Optimierung durch Historie
 - ✅ Audit Trail für alle Änderungen
 
-**Beispiel: Preis-Historie**
+#### Beispiel: Preis-Historie
+
 ```sql
 -- Wie hat sich der Preis von Produkt 1 entwickelt?
 SELECT 
@@ -138,6 +303,7 @@ ORDER BY
 ```
 
 **Zeitreise-Query:**
+
 ```sql
 -- Welcher Preis galt am 15. Juni 2024?
 SELECT 
@@ -158,6 +324,7 @@ WHERE
 **Datei:** `03_fact_constellation.sql`
 
 **Was wird gemacht:**
+
 - **4 neue Fact-Tabellen**:
   1. `FACT_INVENTORY` - Lagerbestandsanalyse
   2. `FACT_EMPLOYEE_PERFORMANCE` - Mitarbeiter-KPIs
@@ -169,12 +336,14 @@ WHERE
 **Aufwand:** 🔴 Hoch | **Nutzen:** 🟢🟢🟢 Sehr Hoch
 
 **Neue Geschäftsprozesse:**
+
 - ✅ Lageroptimierung
 - ✅ Mitarbeiter-Performance-Management
 - ✅ Customer-Service-Qualität
 - ✅ Retourenmanagement
 
-**Beispiel: Cross-Fact Analyse**
+#### Beispiel: Cross-Fact Analyse
+
 ```sql
 -- Produkte mit hoher Retourenrate
 SELECT 
@@ -372,6 +541,7 @@ ORDER BY
 ### Best Practices
 
 ✅ **DO:**
+
 - Flache, denormalisierte Dimensionen
 - Surrogate Keys verwenden
 - Bitmap Indexes für Foreign Keys in Facts
@@ -380,6 +550,7 @@ ORDER BY
 - Constraints für Datenqualität
 
 ❌ **DON'T:**
+
 - Dimensionen nicht normalisieren (kein Snowflake ohne Grund)
 - Keine NULL-Foreign-Keys in Facts (verwende Unknown-Dimension)
 - Keine berechneten Felder in SELECT (pre-calculate in Facts)
@@ -494,4 +665,3 @@ EXEC sp_update_product_scd(p_product_id => 1234, p_price => 899);  -- 1234 ist I
 **Branch:** `feature/erweitertes-star-schema`  
 **Status:** ✅ In Entwicklung  
 **Letztes Update:** 2024-10-28
-
