@@ -18,7 +18,7 @@ Bearbeitung aller 9 Aufgaben der Übung "Analytische Funktionen" auf Basis des S
 ```text
 dbi_uebung_05/
 │
-├── README.md                                    # Hauptdokumentation
+├── README.md                                   # Hauptdokumentation
 ├── UEBERSICHT_KOMPLETT.md                      # Diese Datei
 ├── TESTING_GUIDE.md                            # Systematischer Testleitfaden
 │
@@ -27,10 +27,10 @@ dbi_uebung_05/
 ├── window_functions.pdf                        # Theoretische Grundlagen
 ├── window_functions_pdf.md                     # Markdown-Version der Theorie
 │
-├── RITT_uebung_05_analytische_funktionen.sql  # ⭐ HAUPTABGABE: Alle 9 Lösungen
-├── dbi_2025_26_oracle.session.sql             # Session-File für Oracle DB
+├── RITT_uebung_05_analytische_funktionen.sql   # ⭐ HAUPTABGABE: Alle 9 Lösungen
+├── dbi_2025_26_oracle.session.sql              # Session-File für Oracle DB
 │
-└── verbesserungen_zu_uebung_02/               # Optimierungen für Übung 02
+└── verbesserungen_zu_uebung_02/                # Optimierungen für Übung 02
     ├── README_VERBESSERUNGEN.md                # Erklärung aller Verbesserungen
     ├── 01_dim_company_ddl_improved.sql         # Verbesserte DDL
     ├── 02_dim_company_load_improved.sql        # Verbessertes Laden
