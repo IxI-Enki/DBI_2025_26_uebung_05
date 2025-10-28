@@ -44,17 +44,17 @@ dbi_uebung_05/
 
 ## ✅ Alle 9 Aufgaben gelöst
 
-| # | Aufgabe | Hauptkonzept | Status |
-|---|---------|--------------|--------|
-| 1 | Gesamtumsatz aller Sales | `SUM() OVER ()` | ✅ |
-| 2 | Gesamtumsatz je Jahr | `PARTITION BY year` | ✅ |
-| 3 | Rang nach Sales | `RANK() OVER (ORDER BY)` | ✅ |
-| 4 | Rang relativ zum Tag | `PARTITION BY year, month, day` | ✅ |
-| 5 | Laufende Summe des Tages | Running Total mit `ORDER BY` | ✅ |
-| 6 | Gleitender Ø 10 Verkäufe | `ROWS BETWEEN 9 PRECEDING...` | ✅ |
-| 7 | Gleitender Ø 10 Tage | `RANGE BETWEEN INTERVAL...` | ✅ |
-| 8 | Rang der Verkäufer | CTE + `RANK()` pro Jahr | ✅ |
-| 9 | Differenz zum Nächsten | `LAG()` für Vergleich | ✅ |
+| #   | Aufgabe                  | Hauptkonzept                    | Status |
+| --- | ------------------------ | ------------------------------- | ------ |
+| 1   | Gesamtumsatz aller Sales | `SUM() OVER ()`                 | ✅     |
+| 2   | Gesamtumsatz je Jahr     | `PARTITION BY year`             | ✅     |
+| 3   | Rang nach Sales          | `RANK() OVER (ORDER BY)`        | ✅     |
+| 4   | Rang relativ zum Tag     | `PARTITION BY year, month, day` | ✅     |
+| 5   | Laufende Summe des Tages | Running Total mit `ORDER BY`    | ✅     |
+| 6   | Gleitender Ø 10 Verkäufe | `ROWS BETWEEN 9 PRECEDING...`   | ✅     |
+| 7   | Gleitender Ø 10 Tage     | `RANGE BETWEEN INTERVAL...`     | ✅     |
+| 8   | Rang der Verkäufer       | CTE + `RANK()` pro Jahr         | ✅     |
+| 9   | Differenz zum Nächsten   | `LAG()` für Vergleich           | ✅     |
 
 **Alle Lösungen befinden sich in:** `RITT_uebung_05_analytische_funktionen.sql`
 
@@ -191,11 +191,11 @@ AVG(fs.amount) OVER (
 
 ### 1. Analytische Funktionen vs. Aggregate
 
-| Traditionelles Aggregat | Analytische Funktion |
-|------------------------|---------------------|
-| `GROUP BY` erforderlich | `OVER()` Clause |
-| Reduziert Zeilen | Behält alle Zeilen |
-| Ein Wert pro Gruppe | Wert wiederholt pro Gruppe |
+| Traditionelles Aggregat | Analytische Funktion       |
+| ----------------------- | -------------------------- |
+| `GROUP BY` erforderlich | `OVER()` Clause            |
+| Reduziert Zeilen        | Behält alle Zeilen         |
+| Ein Wert pro Gruppe     | Wert wiederholt pro Gruppe |
 
 ### 2. OVER Clause - Die drei Komponenten
 
@@ -223,18 +223,18 @@ SUM(amount) OVER (ORDER BY date)  -- Running Total!
 
 ### 5. ROWS vs. RANGE
 
-| Typ | Einheit | Beispiel |
-|-----|---------|----------|
-| **ROWS** | Anzahl Zeilen | `ROWS BETWEEN 9 PRECEDING AND CURRENT ROW` |
-| **RANGE** | Wertebereich | `RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW` |
+| Typ       | Einheit       | Beispiel                                                    |
+| --------- | ------------- | ----------------------------------------------------------- |
+| **ROWS**  | Anzahl Zeilen | `ROWS BETWEEN 9 PRECEDING AND CURRENT ROW`                  |
+| **RANGE** | Wertebereich  | `RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW` |
 
 ### 6. Ranking-Funktionen
 
-| Funktion | Bei Gleichheit | Beispiel (Werte: 100, 90, 90, 80) |
-|----------|----------------|-------------------------------------|
-| `RANK()` | Lücken | 1, 2, 2, 4 |
-| `DENSE_RANK()` | Keine Lücken | 1, 2, 2, 3 |
-| `ROW_NUMBER()` | Eindeutig | 1, 2, 3, 4 |
+| Funktion       | Bei Gleichheit | Beispiel (Werte: 100, 90, 90, 80) |
+| -------------- | -------------- | --------------------------------- |
+| `RANK()`       | Lücken         | 1, 2, 2, 4                        |
+| `DENSE_RANK()` | Keine Lücken   | 1, 2, 2, 3                        |
+| `ROW_NUMBER()` | Eindeutig      | 1, 2, 3, 4                        |
 
 ### 7. LAG/LEAD - Zeitreise in Daten
 
