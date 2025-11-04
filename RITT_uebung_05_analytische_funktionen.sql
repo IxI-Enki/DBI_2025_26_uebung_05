@@ -21,7 +21,7 @@
 -- und wiederholt diese bei jeder Zeile als zusätzliche Spalte
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
     fs.quantity,
@@ -40,11 +40,11 @@ ORDER BY fs.order_id, fs.item_id;
 -- SUM(amount) berechnet dann die Summe pro Jahr
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
-    dt.year AS jahr,
     fs.amount,
+    dt.year AS jahr,
     SUM(fs.amount) OVER () AS gesamtumsatz_alle,
     SUM(fs.amount) OVER (PARTITION BY dt.year) AS gesamtumsatz_jahr
 FROM FACT_SALES fs
@@ -61,7 +61,7 @@ ORDER BY dt.year, fs.order_id, fs.item_id;
 -- Höherer Umsatz = höherer Rang (DESC)
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
     fs.amount,
@@ -80,7 +80,7 @@ ORDER BY fs.amount DESC;
 -- RANK() wird innerhalb jedes Tages separat berechnet
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
     dt.year,
@@ -88,7 +88,7 @@ SELECT
     dt.day,
     fs.amount,
     RANK() OVER (
-        PARTITION BY dt.year, dt.month, dt.day 
+        PARTITION BY dt.year, dt.month, dt.day
         ORDER BY fs.amount DESC
     ) AS rang_am_tag
 FROM FACT_SALES fs
@@ -105,7 +105,7 @@ ORDER BY dt.year, dt.month, dt.day, rang_am_tag;
 -- Implizites Fenster: ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
     dt.year,
@@ -113,12 +113,12 @@ SELECT
     dt.day,
     fs.amount,
     SUM(fs.amount) OVER (
-        PARTITION BY dt.year, dt.month, dt.day 
+        PARTITION BY dt.year, dt.month, dt.day
         ORDER BY fs.amount
     ) AS laufende_summe_tag,
     -- Alternative: explizite Fensterdeklaration (identisches Ergebnis)
     SUM(fs.amount) OVER (
-        PARTITION BY dt.year, dt.month, dt.day 
+        PARTITION BY dt.year, dt.month, dt.day
         ORDER BY fs.amount
         ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
     ) AS laufende_summe_tag_explizit
@@ -136,7 +136,7 @@ ORDER BY dt.year, dt.month, dt.day, fs.amount;
 -- AVG() berechnet den Durchschnitt über dieses gleitende Fenster von 10 Verkäufen
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
     dt.year,
@@ -163,24 +163,24 @@ ORDER BY dt.year, dt.month, dt.day, fs.amount;
 -- WICHTIG: RANGE arbeitet mit Wertebereichen (hier: Tage), nicht mit Zeilenanzahl
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
     dt.year,
     dt.month,
     dt.day,
     TO_DATE(
-        LPAD(dt.year, 4, '0') || '-' || 
-        LPAD(dt.month, 2, '0') || '-' || 
-        LPAD(dt.day, 2, '0'), 
+        LPAD(dt.year, 4, '0') || '-' ||
+        LPAD(dt.month, 2, '0') || '-' ||
+        LPAD(dt.day, 2, '0'),
         'YYYY-MM-DD'
     ) AS verkaufsdatum,
     fs.amount,
     AVG(fs.amount) OVER (
         ORDER BY TO_DATE(
-            LPAD(dt.year, 4, '0') || '-' || 
-            LPAD(dt.month, 2, '0') || '-' || 
-            LPAD(dt.day, 2, '0'), 
+            LPAD(dt.year, 4, '0') || '-' ||
+            LPAD(dt.month, 2, '0') || '-' ||
+            LPAD(dt.day, 2, '0'),
             'YYYY-MM-DD'
         )
         RANGE BETWEEN INTERVAL '10' DAY PRECEDING AND CURRENT ROW
@@ -200,7 +200,7 @@ ORDER BY dt.year, dt.month, dt.day;
 ----------------------------------------------------------------------------------------------------
 
 WITH verkaufer_jahresumsatz AS (
-    SELECT 
+    SELECT
         dt.year,
         fs.employee,
         de.first_name,
@@ -212,7 +212,7 @@ WITH verkaufer_jahresumsatz AS (
     WHERE fs.employee IS NOT NULL  -- nur Verkäufe mit zugeordnetem Verkäufer
     GROUP BY dt.year, fs.employee, de.first_name, de.last_name
 )
-SELECT 
+SELECT
     year,
     employee,
     first_name,
@@ -233,7 +233,7 @@ ORDER BY year, rang_im_jahr;
 ----------------------------------------------------------------------------------------------------
 
 WITH verkaufer_jahresumsatz AS (
-    SELECT 
+    SELECT
         dt.year,
         fs.employee,
         de.first_name,
@@ -245,7 +245,7 @@ WITH verkaufer_jahresumsatz AS (
     WHERE fs.employee IS NOT NULL
     GROUP BY dt.year, fs.employee, de.first_name, de.last_name
 )
-SELECT 
+SELECT
     year,
     employee,
     first_name,
@@ -264,16 +264,16 @@ ORDER BY year, rang_im_jahr;
 -- Diese Query kombiniert mehrere Aufgaben in einer Abfrage zur besseren Übersicht
 ----------------------------------------------------------------------------------------------------
 
-SELECT 
+SELECT
     fs.order_id,
     fs.item_id,
     dt.year,
     dt.month,
     dt.day,
     TO_DATE(
-        LPAD(dt.year, 4, '0') || '-' || 
-        LPAD(dt.month, 2, '0') || '-' || 
-        LPAD(dt.day, 2, '0'), 
+        LPAD(dt.year, 4, '0') || '-' ||
+        LPAD(dt.month, 2, '0') || '-' ||
+        LPAD(dt.day, 2, '0'),
         'YYYY-MM-DD'
     ) AS verkaufsdatum,
     de.first_name || ' ' || de.last_name AS verkaufer,
@@ -292,7 +292,7 @@ SELECT
     RANK() OVER (PARTITION BY dt.year, dt.month, dt.day ORDER BY fs.amount DESC) AS rang_am_tag,
     -- Aufgabe 5: Laufende Summe des Tages
     SUM(fs.amount) OVER (
-        PARTITION BY dt.year, dt.month, dt.day 
+        PARTITION BY dt.year, dt.month, dt.day
         ORDER BY fs.amount
     ) AS laufende_summe_tag,
     -- Aufgabe 6: Gleitender Durchschnitt der letzten 10 Verkäufe
@@ -308,6 +308,5 @@ LEFT JOIN DIM_EMPLOYEE de ON fs.employee = de.id
 ORDER BY dt.year, dt.month, dt.day, fs.order_id, fs.item_id;
 
 ----------------------------------------------------------------------------------------------------
--- Ende der Datei
-----------------------------------------------------------------------------------------------------
 COMMIT;
+----------------------------------------------------------------------------------------------------
